@@ -1,0 +1,63 @@
+name: Weekly DORA Metrics Report
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # 매주 일요일 자정(UTC 기준)에 자동 실행
+  workflow_dispatch: # 깃허브 웹에서 수동으로 버튼을 눌러 실행할 수 있도록 허용
+
+jobs:
+  collect-dora-metrics:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 1. 리포지토리 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 2. week_2 폴더 확인 및 생성
+        run: mkdir -p week_2
+
+      - name: 3. DORA 지표 데이터 수집 및 JSON 저장 (week_2 폴더 내)
+        run: |
+          # 가상의 DORA 메트릭 데이터를 week_2 폴더 안에 생성합니다.
+          cat <<EOF > week_2/dora_metrics.json
+          {
+            "date": "$(date +'%Y-%m-%d')",
+            "project": "Saha-gu AI Counselor",
+            "metrics": {
+              "deployment_frequency": 5,
+              "lead_time_for_changes_hours": 12,
+              "mttr_hours": 2,
+              "change_failure_rate_percent": 10
+            }
+          }
+          EOF
+
+      - name: 4. JSON 결과를 GitHub Artifact로 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: dora-metrics-json
+          path: week_2/dora_metrics.json # 아티팩트 경로도 week_2로 지정
+          retention-days: 30
+
+      - name: 5. 주간 보고서(Markdown) 자동 생성 (week_2 폴더 내)
+        run: |
+          echo "# 📊 주간 DORA 지표 리포트 ($(date +'%Y-%m-%d'))" > week_2/DORA_REPORT.md
+          echo "GitHub Actions에 의해 자동 생성된 리포트입니다." >> week_2/DORA_REPORT.md
+          echo "" >> week_2/DORA_REPORT.md
+          echo "### 🎯 이번 주 요약" >> week_2/DORA_REPORT.md
+          echo "- **배포 빈도 (Deployment Frequency):** 주 5회 (High)" >> week_2/DORA_REPORT.md
+          echo "- **변경 리드 타임 (Lead Time for Changes):** 12시간 (Medium)" >> week_2/DORA_REPORT.md
+          echo "- **평균 복구 시간 (MTTR):** 2시간 (High)" >> week_2/DORA_REPORT.md
+          echo "- **변경 실패율 (Change Failure Rate):** 10% (High)" >> week_2/DORA_REPORT.md
+          echo "" >> week_2/DORA_REPORT.md
+          echo "> 상세 데이터는 이번 Action 실행의 \`dora-metrics-json\` 아티팩트에서 다운로드할 수 있습니다." >> week_2/DORA_REPORT.md
+
+      - name: 6. 리포트 자동 커밋 및 푸시
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add week_2/
+          git commit -m "docs(week_2): 주간 DORA 지표 리포트 자동 업데이트" || echo "변경 사항 없음"
+          git push
