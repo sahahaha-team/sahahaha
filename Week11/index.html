@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11주차 Feature Flag & 점진적 배포</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background-color: #f9f9f9; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .hidden { display: none !important; }
+        .input-group { margin-bottom: 20px; }
+        input { padding: 8px; width: 200px; }
+        button { padding: 8px 16px; background-color: #8b5cf6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #7c3aed; }
+        
+        /* A/B 테스트 배너 스타일 */
+        .banner { padding: 20px; margin: 20px 0; border-radius: 8px; color: white; text-align: center; font-size: 1.2em; font-weight: bold; }
+        .variant-a { background-color: #3b82f6; } /* 파란색 배너 */
+        .variant-b { background-color: #f97316; } /* 주황색 배너 */
+        
+        .log-box { margin-top: 20px; padding: 10px; background: #333; color: #0f0; font-family: monospace; border-radius: 5px; height: 100px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚀 Feature Flag & A/B 테스트</h2>
+        
+        <div class="input-group">
+            <label>👤 사용자 ID: </label>
+            <input type="text" id="userIdInput" value="user_123" placeholder="ID를 입력하세요">
+            <button onclick="applyFlags()">적용하기</button>
+        </div>
+
+        <hr>
+
+        <div id="newFeatureSection" class="hidden">
+            <h3 style="color: #8b5cf6;">✨ [플래그 1] 신규 UI 기능 활성화됨!</h3>
+        </div>
+
+        <div id="adminBetaSection" class="hidden">
+            <p style="color: red; font-weight: bold;">🚨 [플래그 2] 관리자 전용 베타 기능 접근 승인</p>
+        </div>
+
+        <div id="promoBanner" class="banner hidden">
+            </div>
+
+        <button id="actionBtn" class="hidden" onclick="trackEvent('PROMO_CLICK')">이벤트 참여하기 (클릭 추적)</button>
+
+        <h3>📊 이벤트 추적 로그</h3>
+        <div id="logBox" class="log-box"></div>
+    </div>
+
+    <script>
+        // --- 1. Feature Flag 설정 (환경 변수 역할) ---
+        const FLAGS = {
+            ENABLE_NEW_UI: true, // 플래그 1: 전체 신규 UI 활성화 여부
+            BETA_ADMIN_ONLY: true, // 플래그 2: 관리자 권한 체크 여부
+            ENABLE_AB_TEST: true // 플래그 3: A/B 테스트 활성화 여부
+        };
+
+        // --- 2. 사용자 ID 기반 일관된 해시 함수 (A/B 할당용) ---
+        function getHash(string) {
+            let hash = 0;
+            for (let i = 0; i < string.length; i++) {
+                hash = string.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return Math.abs(hash);
+        }
+
+        // --- 3. 플래그 적용 및 UI 렌더링 ---
+        function applyFlags() {
+            const userId = document.getElementById('userIdInput').value.trim();
+            if (!userId) return alert('사용자 ID를 입력해주세요.');
+
+            logMessage(`[System] 사용자 '${userId}' 플래그 확인 중...`);
+
+            // 플래그 1 적용: 환경 변수 기반 제어
+            const newUi = document.getElementById('newFeatureSection');
+            if (FLAGS.ENABLE_NEW_UI) newUi.classList.remove('hidden');
+
+            // 플래그 2 적용: 대상 사용자(admin) 조건 제어
+            const adminBeta = document.getElementById('adminBetaSection');
+            if (FLAGS.BETA_ADMIN_ONLY && userId.startsWith('admin')) {
+                adminBeta.classList.remove('hidden');
+            } else {
+                adminBeta.classList.add('hidden');
+            }
+
+            // 플래그 3 적용: A/B 테스트 사용자 할당 (일관성 유지)
+            const banner = document.getElementById('promoBanner');
+            const actionBtn = document.getElementById('actionBtn');
+            
+            if (FLAGS.ENABLE_AB_TEST) {
+                const variant = getHash(userId) % 2 === 0 ? 'A' : 'B';
+                banner.className = `banner variant-${variant.toLowerCase()}`;
+                banner.innerText = `[A/B 테스트] 당신은 그룹 ${variant} 입니다!`;
+                banner.dataset.variant = variant; // 이벤트 추적을 위해 저장
+                
+                banner.classList.remove('hidden');
+                actionBtn.classList.remove('hidden');
+                logMessage(`[A/B Test] 할당 완료: 그룹 ${variant}`);
+            }
+        }
+
+        // --- 4. 이벤트 추적 로직 ---
+        function trackEvent(action) {
+            const userId = document.getElementById('userIdInput').value;
+            const variant = document.getElementById('promoBanner').dataset.variant || 'None';
+            
+            // 실제 서버로 로그를 보내는 가짜 API 호출
+            const payload = { userId, action, variant, timestamp: new Date().toISOString() };
+            logMessage(`[Event Log] 전송 됨: ${JSON.stringify(payload)}`);
+        }
+
+        // 화면 로그 출력 유틸리티
+        function logMessage(msg) {
+            const logBox = document.getElementById('logBox');
+            logBox.innerHTML += `<div>> ${msg}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // 초기 실행
+        applyFlags();
+    </script>
+</body>
+</html>
