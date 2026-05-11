@@ -1,0 +1,18 @@
+{
+  "name": "@hellokack/aioss-week9-package",
+  "version": "1.0.0",
+  "description": "AIOSS 9주차 npm 패키지 배포 테스트",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hellokack/sahahaha.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "author": "Ha Yoonseong",
+  "license": "ISC"
+}

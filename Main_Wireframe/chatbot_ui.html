@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사하구청 AI 챗봇 메인</title>
+    <style>
+        /* 와이어프레임 배경 및 모바일 화면 틀 */
+        body { background-color: #e0e5ec; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
+        .mobile-container { width: 375px; height: 812px; background-color: #ffffff; border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 8px solid #333; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        
+        /* 상단 헤더 */
+        .header { background-color: #005A9C; color: white; padding: 20px 15px 15px; text-align: center; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .header .icon { font-size: 20px; cursor: pointer; }
+
+        /* 채팅 영역 (인사말) */
+        .chat-section { flex: 1; padding: 20px; background-color: #F4F7FA; display: flex; flex-direction: column; }
+        .bot-profile { display: flex; align-items: center; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #333; }
+        .bot-profile span { background-color: #005A9C; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; margin-right: 10px; }
+        .chat-bubble { background-color: #ffffff; padding: 15px; border-radius: 0 15px 15px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-size: 15px; line-height: 1.5; color: #333; max-width: 85%; }
+        
+        /* 퀵 메뉴 (팀원들 스타일 반영한 그리드) */
+        .quick-menu-title { margin: 25px 0 10px 5px; font-size: 14px; font-weight: bold; color: #555; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 5px; }
+        .grid-item { background-color: #ffffff; border: 1px solid #E1E8EE; border-radius: 15px; padding: 20px 10px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer; transition: all 0.2s; }
+        .grid-item:hover { border-color: #005A9C; background-color: #F0F8FF; transform: translateY(-2px); }
+        .grid-icon { font-size: 28px; margin-bottom: 10px; }
+        .grid-text { font-size: 14px; font-weight: bold; color: #333; }
+
+        /* 하단 입력창 */
+        .input-section { background-color: #ffffff; padding: 15px; border-top: 1px solid #E1E8EE; display: flex; align-items: center; }
+        .input-box { flex: 1; background-color: #F4F7FA; border: none; padding: 12px 15px; border-radius: 20px; font-size: 14px; outline: none; }
+        .send-btn { background-color: #005A9C; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="mobile-container">
+    <div class="header">
+        <div class="icon">❮</div>
+        <div>사하구청 AI 민원 챗봇</div>
+        <div class="icon">☰</div>
+    </div>
+
+    <div class="chat-section">
+        <div class="bot-profile">
+            <span>AI</span> 사하구청 챗봇
+        </div>
+        <div class="chat-bubble">
+            안녕하세요! 무엇을 도와드릴까요?<br>
+            아래의 자주 찾는 민원을 선택하시거나, 궁금하신 내용을 직접 입력해 주세요.
+        </div>
+
+        <div class="quick-menu-title">📌 자주 찾는 민원 서비스</div>
+        <div class="grid-container">
+            <div class="grid-item">
+                <div class="grid-icon">📄</div>
+                <div class="grid-text">주민등록/인감</div>
+            </div>
+            <div class="grid-item">
+                <div class="grid-icon">✈️</div>
+                <div class="grid-text">여권 발급 안내</div>
+            </div>
+            <div class="grid-item">
+                <div class="grid-icon">💰</div>
+                <div class="grid-text">지방세 납부</div>
+            </div>
+            <div class="grid-item">
+                <div class="grid-icon">🗑️</div>
+                <div class="grid-text">대형 폐기물</div>
+            </div>
+            <div class="grid-item">
+                <div class="grid-icon">🚗</div>
+                <div class="grid-text">불법 주정차</div>
+            </div>
+            <div class="grid-item">
+                <div class="grid-icon">🏥</div>
+                <div class="grid-text">보건 및 복지</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <input type="text" class="input-box" placeholder="질문을 자유롭게 입력해 주세요...">
+        <button class="send-btn">➤</button>
+    </div>
+</div>
+
+</body>
+</html>
